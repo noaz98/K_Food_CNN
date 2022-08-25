@@ -5,12 +5,17 @@ import numpy as np
 import  matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from konlpy.tag import *
-def get_clean_text(df):  # 불용어 제거
+
+
+# 불용어 제거
+def get_clean_text(df):
     text = []
 
     for i in range(0, len(df)):
+        
         if (str(df['main_text'][i]) == 'nan'):  # 지우고 싶은 글자가 있는 컬럼
             temp = ''
+            
         else:
             temp = df['main_text'][i]
             temp = re.sub(
@@ -32,10 +37,12 @@ def get_clean_text(df):  # 불용어 제거
 
     return text
 
-
-def convert_date(date): # 년/월/일로 변환
+# 년/월/일로 변환
+def convert_date(date): 
+    
     if date == None:
         return np.Nan
+    
     date = date.replace(",", "일")
     a_1 = date[:date.index("일")+1]
     a_2 = date[date.index("일")+2:]+"년"
@@ -44,14 +51,18 @@ def convert_date(date): # 년/월/일로 변환
     return a_2
 
 
-def count_string(string): # 공백 제거
+# 공백 제거
+def count_string(string):
+    
     new_string = re.sub(r'[0-9]+', '', str(string))
     count_space = re.sub('\n', '', str(new_string))
 
     return len(count_space)
 
 
-def word_cloud(data_frame, cloud_shape_path, font_path):  # 워드 크라우드 생성
+# 워드 크라우드 생성
+def word_cloud(data_frame, cloud_shape_path, font_path): 
+    
     df = data_frame
     okt = Okt()
     df_list = df["main_text"].to_list()
@@ -59,9 +70,11 @@ def word_cloud(data_frame, cloud_shape_path, font_path):  # 워드 크라우드 
     ban_list = ["인스타", "그램", "맞팔", "스타", "날씨",
                 "오늘", "지금"]  # 그램 , 인스타 등의 문자열을 의미없다고 판단
     df_word = []
+    
     for i in df_list:
         word = okt.pos(i)
         df_word.extend(word)
+        
     noun_adj_list = []
 
     # tag가 명사이거나 형용사인 단어들만 noun_adj_list에 넣어준다.
@@ -79,7 +92,9 @@ def word_cloud(data_frame, cloud_shape_path, font_path):  # 워드 크라우드 
                    prefer_horizontal=True, mask=mask, colormap="cool", contour_width=3, max_font_size=400)
 
     cloud = wc.generate_from_frequencies(dict(tags))
-    plt.figure(figsize=(10, 10))
+    
+    # 워드 클라우드 생성
+    plt.figure(figsize=(10, 10)) 
     plt.imshow(cloud)
     plt.axis('off')
     plt.show()

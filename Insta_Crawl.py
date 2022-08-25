@@ -7,7 +7,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 import pandas as pd
 
-def extract_insta_data(login_option, user_id, user_passwd, wish_num, keyword, driver_path, save_path):  # 추출
+# 인스타그램 "#(해시태그) + keyword" 검색 후 결과 출력
+def extract_insta_data(login_option, user_id, user_passwd, wish_num, keyword, driver_path, save_path):  
 
     save_file_name = "instagram_extract"
 
@@ -38,7 +39,7 @@ def extract_insta_data(login_option, user_id, user_passwd, wish_num, keyword, dr
 
     is_login_success = False
 
-    if login_option == "instagram":
+    if login_option == "instagram": # 로그인 옵션
         try:
             instagram_id_form = driver.find_element(By.NAME, instagram_id_name)
             instagram_id_form.send_keys(user_id)
@@ -108,7 +109,8 @@ def extract_insta_data(login_option, user_id, user_passwd, wish_num, keyword, dr
             login_btn.click()
         time.sleep(7)
 
-    if is_login_success:
+
+    if is_login_success: # 로그인 성공 시 검색
         url = "https://www.instagram.com/explore/tags/{}/".format(keyword)
 
         instagram_tags = []
@@ -142,7 +144,7 @@ def extract_insta_data(login_option, user_id, user_passwd, wish_num, keyword, dr
             if check_arrow == False:
                 break
 
-            #href
+            # 게시글 URL 추출
             try:
 
                 location_href = driver.current_url
@@ -180,7 +182,7 @@ def extract_insta_data(login_option, user_id, user_passwd, wish_num, keyword, dr
             date_titles.append(date_title)
             main_texts.append(main_text)
 
-            try:
+            try: # 다음 게시글 버튼 클릭
                 WebDriverWait(driver, 100).until(EC.presence_of_element_located(
                     (By.CSS_SELECTOR, next_arrow_btn_css1)))
                 time.sleep(3)
@@ -193,7 +195,7 @@ def extract_insta_data(login_option, user_id, user_passwd, wish_num, keyword, dr
 
             count_extract += 1
 
-        #datafram and save
+        # 추출한 게시글을 csv 파일로 저장
         try:
             insta_info_df = pd.DataFrame(
                 {"location_href": location_hrefs, "upload_id": upload_ids, "date_title": date_titles, "main_text": main_texts})
@@ -202,6 +204,6 @@ def extract_insta_data(login_option, user_id, user_passwd, wish_num, keyword, dr
         except:
             print("fail to save data")
 
-    #login failed
+    # 로그인 실패 시 출력
     elif not is_login_success:
         print(f"login {login_option} fail")
